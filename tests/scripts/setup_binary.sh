@@ -15,7 +15,7 @@ EYRIE_PLUGINS="freemem"
 # Download Eyrie Runtime
 if [ ! -d $EYRIE_DIR ]
 then
-  git clone https://github.com/keystone-enclave/keystone-runtime $EYRIE_DIR
+  git clone https://github.com/iaclab-hpme/keystone-runtime $EYRIE_DIR
 fi
 cd $EYRIE_DIR; git checkout 3130f20; cd ..
 
