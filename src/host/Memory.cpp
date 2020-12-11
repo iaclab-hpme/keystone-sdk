@@ -13,6 +13,7 @@ Memory::Memory() {
   utmFreeList   = 0;
   rootPageTable = 0;
   startAddr     = 0;
+  utmStartAddr  = 0;
 }
 
 void
@@ -95,8 +96,11 @@ Memory::allocPage(uintptr_t va, uintptr_t src, unsigned int mode) {
       break;
     }
     case UTM_FULL: {
+      // printf("[DEBUG] page_addr=0x%lx\n", page_addr);
       *pte = pte_create(page_addr, PTE_D | PTE_A | PTE_R | PTE_W | PTE_V);
-      writeMem(src, (uintptr_t)page_addr << PAGE_BITS, PAGE_SIZE);
+      // printf("[DEBUG] *pte=0x%lx\n", *pte);
+      writeMem(src, (uintptr_t)page_addr << PAGE_BITS, PAGE_SIZE, true);
+      // printf("[DEBUG] writeMem done\n");
       break;
     }
     default: {

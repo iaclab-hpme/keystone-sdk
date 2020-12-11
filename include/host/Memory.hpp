@@ -70,9 +70,9 @@ class Memory {
   Memory();
   ~Memory() {}
   virtual void init(
-      KeystoneDevice* dev, uintptr_t phys_addr, size_t min_pages) = 0;
+      KeystoneDevice* dev, uintptr_t phys_addr, size_t min_pages, uintptr_t utm_phys_addr) = 0;
   virtual uintptr_t readMem(uintptr_t src, size_t size) = 0;
-  virtual void writeMem(uintptr_t src, uintptr_t dst, size_t size) = 0;
+  virtual void writeMem(uintptr_t src, uintptr_t dst, size_t size, bool isUtm=false) = 0;
   virtual uintptr_t allocMem(size_t size) = 0;
   virtual uintptr_t allocUtm(size_t size) = 0;
   bool allocPage(uintptr_t eva, uintptr_t src, unsigned int mode);
@@ -108,6 +108,7 @@ class Memory {
   uintptr_t utmFreeList;
   uintptr_t rootPageTable;
   uintptr_t startAddr;
+  uintptr_t utmStartAddr;
 
   // for hash calculation
   uintptr_t runtimePhysAddr;
@@ -129,9 +130,9 @@ class PhysicalEnclaveMemory : public Memory {
  public:
   PhysicalEnclaveMemory() {}
   ~PhysicalEnclaveMemory() {}
-  void init(KeystoneDevice* dev, uintptr_t phys_addr, size_t min_pages);
+  void init(KeystoneDevice* dev, uintptr_t phys_addr, size_t min_pages, uintptr_t utm_phys_addr);
   uintptr_t readMem(uintptr_t src, size_t size);
-  void writeMem(uintptr_t src, uintptr_t dst, size_t size);
+  void writeMem(uintptr_t src, uintptr_t dst, size_t size, bool isUtm=false);
   uintptr_t allocMem(size_t size);
   uintptr_t allocUtm(size_t size);
 };
@@ -144,9 +145,9 @@ class SimulatedEnclaveMemory : public Memory {
  public:
   SimulatedEnclaveMemory() {}
   ~SimulatedEnclaveMemory() {}
-  void init(KeystoneDevice* dev, uintptr_t phys_addr, size_t min_pages);
+  void init(KeystoneDevice* dev, uintptr_t phys_addr, size_t min_pages, uintptr_t utm_phys_addr);
   uintptr_t readMem(uintptr_t src, size_t size);
-  void writeMem(uintptr_t src, uintptr_t dst, size_t size);
+  void writeMem(uintptr_t src, uintptr_t dst, size_t size, bool isUtm=false);
   uintptr_t allocMem(size_t size);
   uintptr_t allocUtm(size_t size);
 };

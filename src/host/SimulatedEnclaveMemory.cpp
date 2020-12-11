@@ -8,12 +8,13 @@ namespace Keystone {
 
 void
 SimulatedEnclaveMemory::init(
-    KeystoneDevice* dev, uintptr_t phys_addr, size_t min_pages) {
+    KeystoneDevice* dev, uintptr_t phys_addr, size_t min_pages, uintptr_t utm_phys_addr) {
   pDevice       = dev;
   epmSize       = PAGE_SIZE * min_pages;
   rootPageTable = allocMem(PAGE_SIZE * min_pages);
   startAddr     = rootPageTable;
   epmFreeList   = startAddr + PAGE_SIZE;
+  utmStartAddr  = utmPhysAddr;
 }
 
 void*
@@ -44,7 +45,7 @@ SimulatedEnclaveMemory::readMem(uintptr_t src, size_t size) {
 }
 
 void
-SimulatedEnclaveMemory::writeMem(uintptr_t src, uintptr_t dst, size_t size) {
+SimulatedEnclaveMemory::writeMem(uintptr_t src, uintptr_t dst, size_t size, bool isUtm) {
   memcpy(reinterpret_cast<void*>(dst), reinterpret_cast<void*>(src), size);
 }
 

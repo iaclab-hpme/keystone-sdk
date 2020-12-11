@@ -28,7 +28,7 @@ macro(use_riscv_toolchain bits)
   set(AR              ${CROSSCOMPILE}ar)
   set(OBJCOPY         ${CROSSCOMPILE}objcopy)
   set(OBJDUMP         ${CROSSCOMPILE}objdump)
-  set(CFLAGS          "-Wall -Werror")
+  set(CFLAGS          "-Wall")
 
   global_set(CMAKE_C_COMPILER        ${CC}${EXT})
   global_set(CMAKE_ASM_COMPILER        ${CC}${EXT})
@@ -87,8 +87,8 @@ macro(add_eyrie_runtime target_name tag plugins) # the files are passed via ${AR
 
   ExternalProject_Add(eyrie-${target_name}
     PREFIX ${runtime_prefix}
-    GIT_REPOSITORY https://github.com/keystone-enclave/keystone-runtime
-    GIT_TAG ${tag}
+    GIT_REPOSITORY https://github.com/iaclab-hpme/keystone-runtime
+    GIT_TAG origin/master
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ./build.sh ${plugins}
     BUILD_IN_SOURCE TRUE

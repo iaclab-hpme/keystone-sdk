@@ -41,7 +41,7 @@ calculate_required_pages(uint64_t eapp_sz, uint64_t rt_sz) {
    * away from this problem.
    * 15 pages will be more than sufficient to cover several hundreds of
    * megabytes of enclave/runtime. */
-  req_pages += 15;
+  req_pages += 50000; // We set 50000 pages to test some big mallocs
   return req_pages;
 }
 
@@ -52,6 +52,8 @@ Enclave::loadUntrusted() {
   static char nullpage[PAGE_SIZE] = {
       0,
   };
+
+  printf("[DEBUG] va_start=0x%lx, va_end=0x%lx\n", va_start, va_end);
 
   while (va_start < va_end) {
     if (!pMemory->allocPage(va_start, (uintptr_t)nullpage, UTM_FULL)) {
@@ -238,7 +240,7 @@ Enclave::prepareEnclave(uintptr_t alternatePhysAddr) {
       enclaveFile->getTotalMemorySize(), runtimeFile->getTotalMemorySize());
 
   if (params.isSimulated()) {
-    pMemory->init(0, 0, minPages);
+    pMemory->init(0, 0, minPages, 0);
     return true;
   }
 
@@ -255,7 +257,9 @@ Enclave::prepareEnclave(uintptr_t alternatePhysAddr) {
     physAddr = pDevice->getPhysAddr();
   }
 
-  pMemory->init(pDevice, physAddr, minPages);
+  printf("[DEBUG] prepareEnclave: physAddr=0x%lx\n", physAddr);
+
+  pMemory->init(pDevice, physAddr, minPages, pDevice->getPhysAddr());
   return true;
 }
 
@@ -296,11 +300,13 @@ Enclave::init(
     destroy();
     return Error::DeviceError;
   }
+  // printf("[DEBUG] prepareEnclave done\n");
 
   if (!mapElf(runtimeFile)) {
     destroy();
     return Error::VSpaceAllocationFailure;
   }
+  // printf("[DEBUG] mapElf runtimeFile done\n");
 
   pMemory->startRuntimeMem();
 
@@ -309,11 +315,13 @@ Enclave::init(
     destroy();
     return Error::ELFLoadFailure;
   }
+  // printf("[DEBUG] loadElf runtimeFile done\n");
 
   if (!mapElf(enclaveFile)) {
     destroy();
     return Error::VSpaceAllocationFailure;
   }
+  // printf("[DEBUG] mapElf enclaveFile done\n");
 
   pMemory->startEappMem();
 
@@ -322,6 +330,7 @@ Enclave::init(
     destroy();
     return Error::ELFLoadFailure;
   }
+  // printf("[DEBUG] loadElf runtimeFile done\n");
 
 /* initialize stack. If not using freemem */
 #ifndef USE_FREEMEM
@@ -331,9 +340,12 @@ Enclave::init(
     return Error::PageAllocationFailure;
   }
 #endif /* USE_FREEMEM */
+  // printf("[DEBUG] initStack done(if any)\n");
 
   uintptr_t utm_free;
   utm_free = pMemory->allocUtm(params.getUntrustedSize());
+
+  // printf("[DEBUG] pMemory->allocUtm done\n");
 
   if (!utm_free) {
     ERROR("failed to init untrusted memory - ioctl() failed");
@@ -345,6 +357,8 @@ Enclave::init(
     ERROR("failed to load untrusted");
   }
 
+  // printf("[DEBUG] load Untrusted done\n");
+
   struct runtime_params_t runtimeParams;
   runtimeParams.runtime_entry =
       reinterpret_cast<uintptr_t>(runtimeFile->getEntryPoint());
@@ -355,7 +369,11 @@ Enclave::init(
   runtimeParams.untrusted_size =
       reinterpret_cast<uintptr_t>(params.getUntrustedSize());
 
+  // printf("[DEBUG] set runtimeParams done\n");
+
   pMemory->startFreeMem();
+
+  // printf("[DEBUG] params.isSimulated=%d\n", params.isSimulated());
 
   /* TODO: This should be invoked with some other function e.g., measure() */
   if (params.isSimulated()) {

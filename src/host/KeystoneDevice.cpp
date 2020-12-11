@@ -49,6 +49,8 @@ KeystoneDevice::finalize(
   encl.free_paddr    = freePhysAddr;
   encl.params        = params;
 
+  printf("[Keystone SDK] finalize: eid=%d, runtimePhysAddr=0x%lx, eappPhysAddr=0x%lx, freePhysAddr=0x%lx\n", eid, runtimePhysAddr, eappPhysAddr, freePhysAddr);
+
   if (ioctl(fd, KEYSTONE_IOC_FINALIZE_ENCLAVE, &encl)) {
     perror("ioctl error");
     return Error::IoctlErrorFinalize;

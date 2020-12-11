@@ -10,14 +10,16 @@ BUILD_COMMAND=make
 OUTPUT_DIR=$(pwd)
 TEST_DIR=$CMAKE_SOURCE_DIR/test_binary/tests
 EYRIE_DIR=$CMAKE_BINARY_DIR/eyrie
-EYRIE_PLUGINS="freemem"
+EYRIE_PLUGINS="freemem paging"
 
 # Download Eyrie Runtime
+rm -rf $EYRIE_DIR
 if [ ! -d $EYRIE_DIR ]
 then
-  git clone https://github.com/keystone-enclave/keystone-runtime $EYRIE_DIR
+  #git clone https://github.com/iaclab-hpme/keystone-runtime $EYRIE_DIR
+  cp -r /home/yintianyu/code/iaclab-hpme/keystone-runtime $EYRIE_DIR
 fi
-cd $EYRIE_DIR; git checkout 3130f20; cd ..
+cd $EYRIE_DIR; cd ..
 
 ################################################################
 #                       Build Enclave                          #

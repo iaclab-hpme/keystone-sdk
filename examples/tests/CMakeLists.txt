@@ -4,7 +4,7 @@ set(host_src test-runner.cpp edge_wrapper.cpp)
 if(RISCV32)
    set(eyrie_plugins "freemem rv32")
 else()
-   set(eyrie_plugins "freemem")
+   set(eyrie_plugins "freemem paging")
 endif()
 
 set(package_name "tests.ke")
